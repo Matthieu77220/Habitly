@@ -28,14 +28,22 @@ function SignUp() {
 
     const nameRegex = new RegExp('^(?!.*[A-Z].*[A-Z].*[A-Z])(?!.*-.*-)[A-Za-z-]+$');
     const emailRegex = new RegExp('[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+');
-    const phoneRegex = new RegExp('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$');
+    const phoneRegex = new RegExp('(0|(\\+33)|(0033))[1-9][0-9]{8}');
     const passwordRegex = new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{12,}$');
 
     useEffect(() =>{
-        fetch('http://localhost:4000/user/signup',)
+        if(formFinal){
+        fetch('http://localhost:4000/user/signup',{
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(formFinal)
+        })
+        .then(res => res.text())
         .then(data => console.log(data))
         .catch(err => console.log(err))
-    }, [formFinal])
+    }}, [formFinal])
     
 
     function checkForm(){
@@ -44,6 +52,7 @@ function SignUp() {
                 if(emailRegex.test(formData.email)){
                     if(phoneRegex.test(formData.phone)){
                         if(passwordRegex.test(formData.password)){
+                            if(formData.password === formData.confirm){
                             let finalForm = {
                                 first_name : formData.first_name,
                                 last_name : formData.last_name,
@@ -51,7 +60,10 @@ function SignUp() {
                                 phone : formData.phone,
                                 password : formData.password
                             }
-                            setFormFinal(finalForm);
+                            setFormFinal(finalForm);}
+                            else{
+                                setError("Votre confirmation de mot de passe n'est pas identique à votre mot de passe.")
+                            }
                         } else {
                             setError("Votre mot de passe doit comporter 12 caractères minimum dont 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spéciale au minimum.")
                         }
@@ -150,6 +162,8 @@ function SignUp() {
                         > 
                         Soumettre
                         </button>
+
+                        { error ? <h3 className="error">{error}</h3> : null }
 
                     </form>
 
