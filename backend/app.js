@@ -14,13 +14,15 @@ app.use(cors(corsOptions));
 
 app.use(express.json())
 
-// Define a route for GET requests to the root URL
 app.get('/', (req, res) => {
   res.send('Hello World from Express!');
 });
 
 
-// Start the server
+const userRouter = require('./routes/user')
+app.use('/user', userRouter)
+
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
