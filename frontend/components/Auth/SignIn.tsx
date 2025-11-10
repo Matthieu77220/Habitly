@@ -22,9 +22,9 @@ function SignIn() {
     useEffect(() =>{
         if(formFinal){
         fetch('http://localhost:4000/user/signin', {
-            method : "POST",
+            method : 'POST',
             headers : {
-                "Type-Content" : "application/json"
+                "Content-Type" : "application/json"
             },
             body: JSON.stringify(formFinal)
         })
@@ -86,6 +86,8 @@ function SignIn() {
                         <button type="submit">
                             soumettre
                         </button>
+
+                        { error ? <h3 className="error">{error}</h3> : null }
                     </form>
                 </body>
             </html>

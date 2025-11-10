@@ -9,7 +9,7 @@ router.post('/signup', (req, res) => {
     const sqlCheck = "SELECT * FROM user WHERE email = ? OR phone = ?";
 
     db.query(sqlCheck, [email, phone], (error, results) => {
-        if (error) return res.status(500).send("Erreur lors de la transmission des infos");
+        if (error) return res.status(500).send("Erreur lors de la transmission des infos.");
 
     
         if (results.length) {
@@ -24,15 +24,45 @@ router.post('/signup', (req, res) => {
             const sqlInsert = "INSERT INTO user(first_name, last_name, email, phone, password) VALUES(?, ?, ?, ?, ?)";
             db.query(sqlInsert, [first_name, last_name, email, phone, hash], (error) => {
                 if (error) return res.status(500).send("Erreur lors de l'ajout en base de donnée.");
-                return res.status(200).send("Utilisateur ajouté à la base de donnée");
+                return res.status(200).send("Utilisateur ajouté à la base de donnée.");
             });
         });
     });
 });
 
 
-router.post('/signin',(req, res) => {
-    
-})
+router.post('/signin', (req, res) => {
+    const { email, password } = req.body;
+
+  const sqlCheck = "SELECT * FROM user WHERE email = ?";
+
+    db.query(sqlCheck, [email], (error, results) => {
+        if (error) {
+            return res.status(500).send("Erreur lors de la transmission des infos.");
+        }
+
+
+        if (results.length === 0) {
+            return res.status(404).send("L'email est introuvable.");
+        }
+
+        
+        const user = results[0];
+
+  
+        bcrypt.compare(password, user.password, (error, isMatch) => {
+            if (error) {
+                return res.status(500).send("Erreur lors de la vérification du mot de passe.");
+            }
+
+            if (isMatch) {
+                return res.status(200).send("Utilisateur connecté !");
+            } else {
+                return res.status(401).send("Mot de passe invalide.");
+            }
+        });
+    });
+});
+
 
 module.exports = router;
